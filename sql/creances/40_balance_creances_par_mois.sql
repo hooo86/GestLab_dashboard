@@ -14,6 +14,7 @@
 --   {{annee}}      Nombre (défaut 2026 ; sans valeur : année en cours)
 --   {{categorie}}  Texte (classe client)
 --   {{unite}}      Filtre de champ → Operating Unit → Name
+-- Filtre DR : {{dr}} (Texte, facultatif) = nom de la direction régionale
 WITH factures AS (
   SELECT
     account_move.id,
@@ -36,6 +37,8 @@ WITH factures AS (
     AND NOT EXISTS (  -- famille client « client interne » (id 1005) exclue
       SELECT 1 FROM res_partner x
       WHERE x.id = account_move.commercial_partner_id AND x.family_customer = 1005)
+    -- Direction régionale de l'unité de la facture (l'unité elle-même si c'est une DR)
+    [[AND EXISTS (SELECT 1 FROM operating_unit u_dr JOIN operating_unit d_dr ON d_dr.id = CASE WHEN COALESCE(u_dr.is_dr, false) THEN u_dr.id ELSE u_dr.parent_dr_id END WHERE u_dr.id = account_move.operating_unit_id AND d_dr.name = {{dr}})]]
     [[AND cat.categorie = {{categorie}}]]
     [[AND {{unite}}]]
 ),

@@ -91,6 +91,10 @@ Le dossier [`sql/encaissements/`](sql/encaissements/) contient les encaissements
 
 Le dossier [`sql/creances/`](sql/creances/) contient la balance des créances clients en fin de mois. Les règlements et avoirs lettrés sont pris à leur date d'effet. Le mode d'emploi est dans son [README](sql/creances/README.md).
 
+### Tableaux de bord par direction régionale
+
+Le script [`outils/dupliquer_par_dr.py`](outils/dupliquer_par_dr.py) copie un tableau de bord pour chaque DR. Dans chaque copie, la DR est fixée dans les requêtes et la copie est rangée dans une collection réservée à la DR. Le mode d'emploi est dans [`outils/README.md`](outils/README.md).
+
 ### Ressources humaines
 
 Le dossier [`sql/rh/`](sql/rh/) contient la pyramide des âges des employés actifs (hommes / femmes, par tranche de 5 ans). Le mode d'emploi est dans son [README](sql/rh/README.md).

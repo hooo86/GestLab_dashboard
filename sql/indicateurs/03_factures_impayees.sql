@@ -3,6 +3,7 @@
 -- (date du règlement, ou date de facture si antérieure) est au plus tard à la date d'arrêté.
 -- Affichage conseillé : tableau
 -- Filtre Metabase : {{date_arrete}} (Date ; sans valeur : aujourd'hui)
+-- Filtre DR : {{dr}} (Texte, facultatif) = nom de la direction régionale
 WITH parametres AS (
   SELECT COALESCE([[{{date_arrete}}::date, ]] CURRENT_DATE) AS date_arrete
 ),
@@ -17,6 +18,8 @@ factures AS (
     AND NOT EXISTS (  -- famille client « client interne » (id 1005) exclue
       SELECT 1 FROM res_partner x
       WHERE x.id = m.commercial_partner_id AND x.family_customer = 1005)
+    -- Direction régionale de l'unité de la facture (l'unité elle-même si c'est une DR)
+    [[AND EXISTS (SELECT 1 FROM operating_unit u_dr JOIN operating_unit d_dr ON d_dr.id = CASE WHEN COALESCE(u_dr.is_dr, false) THEN u_dr.id ELSE u_dr.parent_dr_id END WHERE u_dr.id = m.operating_unit_id AND d_dr.name = {{dr}})]]
     AND m.invoice_date <= parametres.date_arrete
 ),
 reglements AS (
