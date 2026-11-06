@@ -1,0 +1,30 @@
+-- CA HT depuis le 1er janvier, comparé à la même période de l'an dernier
+-- Visualisation : Tableau (mise en forme : evolution_pct en vert/rouge)
+--                 ou Barres groupées (X = unite, Y = ca_n et ca_n1)
+-- Filtre Metabase : {{unite}} (pas de filtre de période : elle est calculée)
+SELECT
+  COALESCE(operating_unit.name, 'Sans unité') AS unite,
+  SUM(account_move.amount_untaxed_signed) FILTER (
+    WHERE account_move.invoice_date >= date_trunc('year', CURRENT_DATE)
+  ) AS ca_n,
+  SUM(account_move.amount_untaxed_signed) FILTER (
+    WHERE account_move.invoice_date <  date_trunc('year', CURRENT_DATE)
+      AND account_move.invoice_date <= CURRENT_DATE - INTERVAL '1 year'
+  ) AS ca_n1,
+  ROUND(100.0 * (
+      SUM(account_move.amount_untaxed_signed) FILTER (
+        WHERE account_move.invoice_date >= date_trunc('year', CURRENT_DATE))
+    - SUM(account_move.amount_untaxed_signed) FILTER (
+        WHERE account_move.invoice_date <  date_trunc('year', CURRENT_DATE)
+          AND account_move.invoice_date <= CURRENT_DATE - INTERVAL '1 year')
+  ) / NULLIF(SUM(account_move.amount_untaxed_signed) FILTER (
+        WHERE account_move.invoice_date <  date_trunc('year', CURRENT_DATE)
+          AND account_move.invoice_date <= CURRENT_DATE - INTERVAL '1 year'), 0), 1) AS evolution_pct
+FROM account_move
+LEFT JOIN operating_unit ON operating_unit.id = account_move.operating_unit_id
+WHERE account_move.move_type IN ('out_invoice', 'out_refund')
+  AND account_move.state = 'posted'
+  AND account_move.invoice_date >= date_trunc('year', CURRENT_DATE) - INTERVAL '1 year'
+  [[AND {{unite}}]]
+GROUP BY 1
+ORDER BY ca_n DESC NULLS LAST;

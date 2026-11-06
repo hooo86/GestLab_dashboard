@@ -75,6 +75,10 @@ Dans Metabase : **Nouveau → Requête SQL**, collez un fichier de `sql/indicate
 | `05_devis_en_cours.sql` | Devis non confirmés | Ventes |
 | `06_stock_par_produit.sql` | Stock par produit | Inventaire |
 
+### Facturation par unité opérationnelle
+
+Le dossier [`sql/facturation_uo/`](sql/facturation_uo/) contient 6 indicateurs de facturation par unité opérationnelle (module OCA `account_operating_unit`), avec filtres par unité et par période. Le mode d'emploi est dans son [README](sql/facturation_uo/README.md).
+
 Les requêtes sont prévues pour **Odoo 16, 17 et 18**. Un indicateur dont le module n'est pas installé renverra une erreur : ignorez-le.
 
 ## Commandes utiles
