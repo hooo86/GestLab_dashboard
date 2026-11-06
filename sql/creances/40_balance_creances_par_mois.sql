@@ -32,6 +32,7 @@ WITH factures AS (
   ) cat ON true
   WHERE account_move.move_type = 'out_invoice'
     AND account_move.state = 'posted'
+    AND account_move.journal_id = 1  -- journal « Factures clients » uniquement
     AND NOT EXISTS (  -- famille client « client interne » (id 1005) exclue
       SELECT 1 FROM res_partner x
       WHERE x.id = account_move.commercial_partner_id AND x.family_customer = 1005)

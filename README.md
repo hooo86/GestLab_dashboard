@@ -93,6 +93,8 @@ Le dossier [`sql/creances/`](sql/creances/) contient la balance des créances cl
 
 Les requêtes sont prévues pour **Odoo 16, 17 et 18**.
 
+> **Journal :** seules les pièces du journal **n° 1 « Factures clients »** sont prises en compte (comme le menu Odoo « Facturation externe »). Les autres journaux, dont les anciennes factures reprises (1905, 1997…), sont ignorés. Pour changer de journal, cherchez `journal_id = 1` dans les fichiers `.sql`.
+>
 > **Clients internes exclus :** toutes les requêtes de facturation ignorent les clients de la **famille client id 1005** (« client interne », champ `family_customer`). Pour exclure une autre famille, cherchez `1005` dans les fichiers `.sql` et écrivez `x.family_customer IN (1005, 1234)`.
 
 ## Commandes utiles

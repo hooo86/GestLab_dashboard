@@ -12,6 +12,7 @@ FROM account_move m
 LEFT JOIN res_partner p ON p.id = m.commercial_partner_id
 WHERE m.move_type = 'out_invoice'
   AND m.state = 'posted'
+  AND m.journal_id = 1  -- journal « Factures clients » uniquement
   AND NOT EXISTS (  -- famille client « client interne » (id 1005) exclue
     SELECT 1 FROM res_partner x
     WHERE x.id = m.commercial_partner_id AND x.family_customer = 1005)

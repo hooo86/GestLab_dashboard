@@ -6,6 +6,7 @@ SELECT
 FROM account_move m
 WHERE m.move_type IN ('out_invoice', 'out_refund')
   AND m.state = 'posted'
+  AND m.journal_id = 1  -- journal « Factures clients » uniquement
   AND NOT EXISTS (  -- famille client « client interne » (id 1005) exclue
     SELECT 1 FROM res_partner x
     WHERE x.id = m.commercial_partner_id AND x.family_customer = 1005)

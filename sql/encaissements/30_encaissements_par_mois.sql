@@ -21,6 +21,7 @@ WITH encaissements AS (
   LEFT JOIN operating_unit   ON operating_unit.id = account_move.operating_unit_id
   WHERE account_move.move_type = 'out_invoice'
     AND account_move.state = 'posted'
+    AND account_move.journal_id = 1  -- journal « Factures clients » uniquement
     AND pay.parent_state = 'posted'
     AND j.type IN ('bank', 'cash')   -- vrais encaissements (pas les avoirs ni les OD)
     AND NOT EXISTS (  -- famille client « client interne » (id 1005) exclue
