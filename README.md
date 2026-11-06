@@ -91,6 +91,10 @@ Le dossier [`sql/encaissements/`](sql/encaissements/) contient les encaissements
 
 Le dossier [`sql/creances/`](sql/creances/) contient la balance des créances clients en fin de mois. Les règlements et avoirs lettrés sont pris à leur date d'effet. Le mode d'emploi est dans son [README](sql/creances/README.md).
 
+### Ressources humaines
+
+Le dossier [`sql/rh/`](sql/rh/) contient la pyramide des âges des employés actifs (hommes / femmes, par tranche de 5 ans). Le mode d'emploi est dans son [README](sql/rh/README.md).
+
 Les requêtes sont prévues pour **Odoo 16, 17 et 18**.
 
 > **Journal :** seules les pièces du journal **n° 1 « Factures clients »** sont prises en compte (comme le menu Odoo « Facturation externe »). Les autres journaux, dont les anciennes factures reprises (1905, 1997…), sont ignorés. Pour changer de journal, cherchez `journal_id = 1` dans les fichiers `.sql`.
