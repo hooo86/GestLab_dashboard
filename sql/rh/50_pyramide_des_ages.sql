@@ -54,4 +54,5 @@ SELECT
 FROM toutes
 LEFT JOIN tranches t ON t.ordre = toutes.ordre   -- sans date de naissance : voir la requête 51
 GROUP BY toutes.ordre, toutes.tranche
-ORDER BY toutes.ordre;                           -- des plus jeunes aux plus âgés
+-- des plus jeunes aux plus âgés
+ORDER BY toutes.ordre;

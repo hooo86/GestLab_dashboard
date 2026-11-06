@@ -22,7 +22,7 @@ factures AS (
   FROM account_move
   CROSS JOIN parametres
   LEFT JOIN operating_unit ON operating_unit.id = account_move.operating_unit_id
-  -- Étiquette du client (contact ou société) parmi la liste ; si plusieurs, la première de la liste
+  -- Étiquette du client (contact ou société) parmi la liste, si plusieurs, la première de la liste
   LEFT JOIN LATERAL (
     SELECT e.code
     FROM (VALUES (1, 'OPGI'), (2, 'AADL'), (3, 'ENPI'), (4, 'DEP'), (5, 'DUAC'), (6, 'DL'), (7, 'VN'), (8, 'CTC')) AS e(ordre, code)
