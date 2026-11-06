@@ -64,3 +64,29 @@ Les filtres sont facultatifs : sans valeur, la requête prend tout.
 4. Enregistrez. Un seul choix d'unité ou d'année met alors toutes les cartes à jour.
 
 > Les cartes 12, 13 et 15 ne suivent pas le filtre Année : elles comparent l'année en cours à l'an dernier ou montrent les impayés du moment.
+
+## 4. Chiffre d'affaires par direction régionale (DR)
+
+La DR d'une facture est :
+- son unité opérationnelle, si cette unité est elle-même une DR (`is_dr` coché) ;
+- sinon la DR parente de l'unité (`parent_dr_id`).
+
+Une unité qui n'est pas une DR et n'a pas de DR parente apparaît dans « Sans DR ».
+
+| Fichier | Indicateur | Visualisation |
+|---|---|---|
+| `17_ca_par_dr_par_mois.sql` | CA HT par DR et par mois | Barres empilées ou Lignes (X = mois, série = direction_regionale) |
+| `18_ca_par_dr_tableau_mensuel.sql` | Tableau : une ligne par DR, une colonne par mois + total | Tableau |
+| `19_liste_dr.sql` | Liste des DR (sert au filtre) | Tableau |
+
+**Variables à régler dans Metabase (cartes 17 et 18)**
+- `annee` : type **Nombre**, libellé « Année », valeur par défaut **2026**
+- `dr` : type **Texte**, libellé « Direction régionale »
+
+Sans valeur pour l'année, la carte 18 prend l'année en cours.
+
+**Filtre « Direction régionale » du tableau de bord, avec liste déroulante**
+1. Enregistrez d'abord la question `19_liste_dr.sql` sous le nom « Liste des DR ».
+2. Dans le tableau de bord : ✏️ → **Ajouter un filtre** → **Texte ou catégorie**.
+3. Réglages du filtre → **Valeurs** → **Depuis une autre question** → « Liste des DR », colonne `direction_regionale`.
+4. Reliez le filtre à la variable `dr` des cartes 17 et 18, et le filtre **Année** à leur variable `annee`.
