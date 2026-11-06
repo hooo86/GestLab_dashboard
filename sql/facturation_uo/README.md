@@ -90,3 +90,14 @@ Sans valeur pour l'année, la carte 18 prend l'année en cours.
 2. Dans le tableau de bord : ✏️ → **Ajouter un filtre** → **Texte ou catégorie**.
 3. Réglages du filtre → **Valeurs** → **Depuis une autre question** → « Liste des DR », colonne `direction_regionale`.
 4. Reliez le filtre à la variable `dr` des cartes 17 et 18, et le filtre **Année** à leur variable `annee`.
+
+## 5. Date d'arrêté (cartes 13 et 15, et 03 dans `sql/indicateurs/`)
+
+Ces cartes se calculent à une **date d'arrêté** au choix. Sans valeur, c'est aujourd'hui.
+
+- Variable `date_arrete` : type **Date**, libellé « Date d'arrêté ».
+- **Reste à encaisser** : TTC des factures émises jusqu'à cette date, moins les règlements et avoirs lettrés dont la date d'effet est au plus tard à cette date. C'est la même règle que pour les créances (dossier `sql/creances/`).
+- **Retard** (carte 13 et carte 03) : compté à la date d'arrêté.
+- **CA du mois et de l'année** (carte 15) : mois et année de la date d'arrêté, jusqu'à cette date.
+
+Sur le tableau de bord, ajoutez un filtre **Date** (« Date unique ») nommé « Date d'arrêté » et reliez-le à `date_arrete` sur les cartes 03, 13, 15 et 41.
