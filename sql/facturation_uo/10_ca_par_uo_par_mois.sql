@@ -3,7 +3,7 @@
 -- Visualisation : Barres empilées (X = mois, Y = ca_ht, série = unite)
 -- Filtres Metabase : {{annee}} et {{unite}} (voir README de ce dossier)
 SELECT
-  date_trunc('month', account_move.invoice_date)::date AS mois,
+  to_char(account_move.invoice_date, 'YYYY-MM') AS mois,
   COALESCE(operating_unit.name, 'Sans unité')         AS unite,
   SUM(account_move.amount_untaxed_signed)              AS ca_ht
 FROM account_move

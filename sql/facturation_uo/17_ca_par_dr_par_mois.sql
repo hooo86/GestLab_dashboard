@@ -4,7 +4,7 @@
 -- Visualisation : Barres empilées ou Lignes (X = mois, Y = ca_ht, série = direction_regionale)
 -- Filtres Metabase : {{annee}} (Nombre, défaut 2026) et {{dr}} (Texte)
 SELECT
-  date_trunc('month', account_move.invoice_date)::date AS mois,
+  to_char(account_move.invoice_date, 'YYYY-MM') AS mois,
   COALESCE(operating_unit.name, 'Sans DR')             AS direction_regionale,
   SUM(account_move.amount_untaxed_signed)              AS ca_ht
 FROM account_move

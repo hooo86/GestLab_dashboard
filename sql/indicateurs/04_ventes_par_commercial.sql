@@ -1,7 +1,7 @@
 -- Commandes confirmées HT par commercial et par mois (module Ventes)
 -- Graphique conseillé : barres empilées
 SELECT
-  date_trunc('month', so.date_order)::date AS mois,
+  to_char(so.date_order, 'YYYY-MM') AS mois,
   COALESCE(up.name, 'Sans commercial')     AS commercial,
   SUM(so.amount_untaxed)                   AS ventes_ht
 FROM sale_order so

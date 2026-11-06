@@ -5,7 +5,7 @@
 --                    {{unite}} (Filtre de champ → Operating Unit → Name)
 -- Sans filtre Année : année en cours.
 SELECT
-  date_trunc('month', account_move.invoice_date)::date AS mois,
+  to_char(account_move.invoice_date, 'YYYY-MM') AS mois,
   cat.categorie AS categorie,
   SUM(account_move.amount_untaxed_signed) AS ca_ht
 FROM account_move
