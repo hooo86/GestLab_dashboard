@@ -79,6 +79,10 @@ Dans Metabase : **Nouveau → Requête SQL**, collez un fichier de `sql/indicate
 
 Le dossier [`sql/facturation_uo/`](sql/facturation_uo/) contient 6 indicateurs de facturation par unité opérationnelle (module OCA `account_operating_unit`), avec filtres par unité et par période. Le mode d'emploi est dans son [README](sql/facturation_uo/README.md).
 
+### Facturation par catégorie client
+
+Le dossier [`sql/facturation_clients/`](sql/facturation_clients/) contient le CA par catégorie client (étiquettes de contact), au total et par mois, avec filtres année, catégorie et unité. Le mode d'emploi est dans son [README](sql/facturation_clients/README.md).
+
 Les requêtes sont prévues pour **Odoo 16, 17 et 18**. Un indicateur dont le module n'est pas installé renverra une erreur : ignorez-le.
 
 ## Commandes utiles
