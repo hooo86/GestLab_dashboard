@@ -7,11 +7,11 @@
 | `50_pyramide_des_ages.sql` | Effectifs par tranche de 5 ans, hommes et femmes côte à côte | Barres |
 | `51_tableau_ages.sql` | Effectifs par tranche (hommes, femmes, autre), part en %, âge moyen, ligne TOTAL | Tableau |
 
-**Règles**
-- Seuls les **employés actifs** sont comptés (fiche employé non archivée).
-- L'âge est calculé à partir de la **date de naissance** (onglet Informations privées), à la **date d'arrêté**.
-- Les employés sans date de naissance apparaissent dans « Non renseigné » (tableau 51 uniquement).
-- La date d'arrêté ne change que le calcul de l'âge : la liste des employés reste celle d'aujourd'hui.
+**Règles : effectif à la date d'arrêté**
+- Seuls les employés de type **Employé** sont comptés (`employee_type = employee`). Stagiaires, sous-traitants, etc. sont exclus.
+- **Recrutés au plus tard à la date** (`date_ru`). Un employé recruté après la date n'est pas compté. Un employé sans date de recrutement est compté.
+- **Encore présents à la date** : ceux partis **après** la date (`departure_date`) sont comptés, **même si leur fiche est archivée** aujourd'hui. Sans date de départ, seules les fiches actives sont comptées.
+- L'âge est calculé à la **date d'arrêté**, d'après la date de naissance. Sans date de naissance : « Non renseigné » (tableau 51).
 
 **Variables Metabase (facultatives)**
 - `date_arrete` : **Date** (sans valeur : aujourd'hui)

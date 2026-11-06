@@ -1,5 +1,7 @@
 -- Pyramide des âges : employés actifs par tranche de 5 ans, hommes / femmes
--- Âge calculé à la date d'arrêté (sans valeur : aujourd'hui), d'après la date de naissance.
+-- Effectif à la date d'arrêté (sans valeur : aujourd'hui) : type « Employé », recrutés
+-- (date_ru) au plus tard à cette date, partis (departure_date) après cette date ou pas partis.
+-- Âge calculé à la date d'arrêté, d'après la date de naissance.
 -- Visualisation : Barres (X = tranche, séries = hommes et femmes côte à côte, non empilées)
 --   ⚙️ Affichage : « Afficher les valeurs sur les points de données »
 -- Filtres Metabase (facultatifs) :
@@ -16,7 +18,13 @@ employes AS (
   FROM hr_employee
   CROSS JOIN parametres
   LEFT JOIN hr_department ON hr_department.id = hr_employee.department_id
-  WHERE hr_employee.active
+  WHERE hr_employee.employee_type = 'employee'        -- type « Employé » uniquement
+    -- Recruté au plus tard à la date d'arrêté (date de recrutement inconnue : compté)
+    AND (hr_employee.date_ru IS NULL OR hr_employee.date_ru <= parametres.date_arrete)
+    -- Encore présent à la date d'arrêté :
+    --   parti après cette date (même archivé aujourd'hui), ou pas de date de départ et fiche active
+    AND (hr_employee.departure_date > parametres.date_arrete
+         OR (hr_employee.departure_date IS NULL AND hr_employee.active))
     [[AND {{departement}}]]
 ),
 tranches AS (
