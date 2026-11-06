@@ -2,7 +2,7 @@
 
 La **catégorie client** est le champ **`family_customer`** de la **société cliente** de la facture. C'est un lien (many2one) vers le modèle **`family.customer`** ; on affiche le nom de la catégorie.
 
-Seuls les partenaires dont la case **`is_customer`** est cochée sont pris en compte.
+Seuls les **clients** sont pris en compte : champ Odoo `customer_rank` > 0. Le champ `is_customer` affiché dans Odoo est calculé et n'existe pas dans la base.
 
 Les montants sont en HT, sur les factures clients validées, avoirs déduits. Un client sans catégorie apparaît dans « Sans catégorie ».
 

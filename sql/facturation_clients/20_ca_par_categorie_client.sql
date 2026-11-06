@@ -1,5 +1,5 @@
 -- CA HT par catégorie client (champ « family_customer » de la société cliente → family.customer)
--- Seuls les partenaires avec « is_customer » coché sont pris en compte.
+-- Seuls les clients (customer_rank > 0, case « client » d'Odoo) sont pris en compte.
 -- Visualisation : Barres horizontales (« Rangée ») ou Anneau
 -- Filtres Metabase : {{annee}} (Nombre, défaut 2026), {{categorie}} (Texte),
 --                    {{unite}} (Filtre de champ → Operating Unit → Name)
@@ -11,7 +11,7 @@ SELECT
   ROUND(100.0 * SUM(account_move.amount_untaxed_signed)
         / NULLIF(SUM(SUM(account_move.amount_untaxed_signed)) OVER (), 0), 1) AS part_pct
 FROM account_move
-JOIN res_partner p ON p.id = account_move.commercial_partner_id AND p.is_customer
+JOIN res_partner p ON p.id = account_move.commercial_partner_id AND p.customer_rank > 0
 -- Catégorie : lien vers family.customer (nom traduisible ou non)
 LEFT JOIN family_customer fc ON fc.id = p.family_customer
 LEFT JOIN LATERAL (
