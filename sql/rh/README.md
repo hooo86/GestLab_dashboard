@@ -4,7 +4,7 @@
 
 | Fichier | Contenu | Visualisation |
 |---|---|---|
-| `50_pyramide_des_ages.sql` | Effectifs par tranche de 5 ans : hommes à gauche, femmes à droite | Barres horizontales empilées |
+| `50_pyramide_des_ages.sql` | Effectifs par tranche de 5 ans, hommes et femmes côte à côte | Barres |
 | `51_tableau_ages.sql` | Effectifs par tranche (hommes, femmes, autre), part en %, âge moyen, ligne TOTAL | Tableau |
 
 **Règles**
@@ -17,10 +17,8 @@
 - `date_arrete` : **Date** (sans valeur : aujourd'hui)
 - `departement` : **Filtre de champ** → **Hr Department → Name** (choix multiple possible)
 
-**Construire la pyramide (question 50)**
-1. Visualisation → **Rangée** (barres horizontales).
-2. ⚙️ → **Données** : axe = `tranche`, séries = `hommes` et `femmes`.
-3. ⚙️ → **Affichage** : **Empiler**. Les hommes, en valeurs négatives, partent à gauche, et les femmes à droite.
+**Construire le graphique (question 50)**
+1. Visualisation → **Barres**.
+2. ⚙️ → **Données** : axe X = `tranche`, séries = `hommes` et `femmes`.
+3. ⚙️ → **Affichage** : **ne pas empiler** (barres côte à côte) et activer **Afficher les valeurs sur les points de données**.
 4. Couleurs : par exemple bleu pour les hommes, orange pour les femmes.
-
-Les barres des hommes affichent un signe « − » : c'est voulu, c'est ce qui les place à gauche. Les chiffres exacts se lisent dans le tableau 51.

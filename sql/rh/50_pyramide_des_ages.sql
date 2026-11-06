@@ -1,8 +1,7 @@
 -- Pyramide des âges : employés actifs par tranche de 5 ans, hommes / femmes
 -- Âge calculé à la date d'arrêté (sans valeur : aujourd'hui), d'après la date de naissance.
--- Visualisation : Barres horizontales (« Rangée »), empilées
---   axe = tranche, séries = hommes (valeurs négatives → à gauche) et femmes (à droite)
---   ⚙️ Affichage : « Empiler » ; colonne hommes → format sans signe (voir README)
+-- Visualisation : Barres (X = tranche, séries = hommes et femmes côte à côte, non empilées)
+--   ⚙️ Affichage : « Afficher les valeurs sur les points de données »
 -- Filtres Metabase (facultatifs) :
 --   {{date_arrete}}   Date
 --   {{departement}}   Filtre de champ → Hr Department → Name
@@ -42,9 +41,9 @@ toutes AS (
 )
 SELECT
   toutes.tranche,
-  -COUNT(t.ordre) FILTER (WHERE t.gender = 'male')   AS hommes,
+  COUNT(t.ordre) FILTER (WHERE t.gender = 'male')   AS hommes,
   COUNT(t.ordre)  FILTER (WHERE t.gender = 'female') AS femmes
 FROM toutes
 LEFT JOIN tranches t ON t.ordre = toutes.ordre   -- sans date de naissance : voir la requête 51
 GROUP BY toutes.ordre, toutes.tranche
-ORDER BY toutes.ordre DESC;                      -- les plus âgés en haut
+ORDER BY toutes.ordre;                           -- des plus jeunes aux plus âgés
