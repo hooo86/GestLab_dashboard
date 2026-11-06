@@ -83,7 +83,9 @@ Le dossier [`sql/facturation_uo/`](sql/facturation_uo/) contient 6 indicateurs d
 
 Le dossier [`sql/facturation_clients/`](sql/facturation_clients/) contient le CA par catégorie client (étiquettes de contact), au total et par mois, avec filtres année, catégorie et unité. Le mode d'emploi est dans son [README](sql/facturation_clients/README.md).
 
-Les requêtes sont prévues pour **Odoo 16, 17 et 18**. Un indicateur dont le module n'est pas installé renverra une erreur : ignorez-le.
+Les requêtes sont prévues pour **Odoo 16, 17 et 18**.
+
+> **Client interne exclu :** toutes les requêtes de facturation ignorent le client interne (partenaire **id 1005**) et ses contacts. Pour en exclure un autre, cherchez `1005` dans les fichiers `.sql` et remplacez la ligne par `... NOT IN (1005, 1234)`. Un indicateur dont le module n'est pas installé renverra une erreur : ignorez-le.
 
 ## Commandes utiles
 

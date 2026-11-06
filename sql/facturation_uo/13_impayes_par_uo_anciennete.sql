@@ -19,6 +19,7 @@ FROM account_move
 LEFT JOIN operating_unit ON operating_unit.id = account_move.operating_unit_id
 WHERE account_move.move_type = 'out_invoice'
   AND account_move.state = 'posted'
+  AND account_move.commercial_partner_id IS DISTINCT FROM 1005  -- client interne exclu
   AND account_move.payment_state IN ('not_paid', 'partial')
   [[AND {{unite}}]]
 GROUP BY 1

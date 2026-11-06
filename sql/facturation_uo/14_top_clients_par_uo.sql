@@ -16,6 +16,7 @@ FROM (
   LEFT JOIN res_partner p  ON p.id = account_move.commercial_partner_id
   WHERE account_move.move_type IN ('out_invoice', 'out_refund')
     AND account_move.state = 'posted'
+    AND account_move.commercial_partner_id IS DISTINCT FROM 1005  -- client interne exclu
     [[AND EXTRACT(YEAR FROM account_move.invoice_date) = {{annee}}]]
     [[AND {{unite}}]]
   GROUP BY 1, 2

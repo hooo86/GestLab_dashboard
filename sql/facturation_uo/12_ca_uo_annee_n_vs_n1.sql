@@ -24,6 +24,7 @@ FROM account_move
 LEFT JOIN operating_unit ON operating_unit.id = account_move.operating_unit_id
 WHERE account_move.move_type IN ('out_invoice', 'out_refund')
   AND account_move.state = 'posted'
+  AND account_move.commercial_partner_id IS DISTINCT FROM 1005  -- client interne exclu
   AND account_move.invoice_date >= date_trunc('year', CURRENT_DATE) - INTERVAL '1 year'
   [[AND {{unite}}]]
 GROUP BY 1
