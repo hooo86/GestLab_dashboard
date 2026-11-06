@@ -5,6 +5,7 @@
 | Fichier | Contenu | Visualisation |
 |---|---|---|
 | `50_pyramide_des_ages.sql` | Effectifs par tranche de 5 ans, hommes et femmes côte à côte | Barres |
+| `52_effectif_total.sql` | Effectif total, hommes, femmes, âge moyen | Nombre |
 | `51_tableau_ages.sql` | Effectifs par tranche (hommes, femmes, autre), part en %, âge moyen, ligne TOTAL | Tableau |
 
 **Règles : effectif à la date d'arrêté**
