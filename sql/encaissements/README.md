@@ -40,3 +40,19 @@ Variables (toutes facultatives) :
 - `annee_encaissement` : **Nombre**, libellé « Année d'encaissement ». Elle sert par exemple à voir ce qui est rentré en 2026, réparti par exercice d'origine des factures.
 - `categorie` : **Texte** (liste : question 22)
 - `unite` : **Filtre de champ** → **Operating Unit → Name**
+
+## Exercice en lignes, classe client en colonnes (carte 34)
+
+`34_encaissements_exercice_x_categorie.sql` donne les mêmes chiffres que la carte 33, présentés en tableau croisé :
+
+| exercice | Secteur public | Privé | TOTAL |
+|---|---|---|---|
+| 2024 | 1 000 | | 1 000 |
+| 2025 | 300 | 700 | 1 000 |
+| **TOTAL** | 1 300 | 700 | 2 000 |
+
+La requête renvoie 3 colonnes (`exercice`, `categorie`, `montant_encaisse`), totaux compris. C'est Metabase qui met les catégories en colonnes. Une nouvelle catégorie créée dans Odoo apparaît donc toute seule.
+
+Dans Metabase : **Visualisation → Tableau** → ⚙️ → activez **Pivoter le tableau** (colonne de pivot = `categorie`, cellule = `montant_encaisse`).
+
+Variables : les mêmes que la carte 33 (`exercice`, `annee_encaissement`, `categorie`, `unite`).
