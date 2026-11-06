@@ -47,8 +47,8 @@ Variables (toutes facultatives) :
 
 | exercice | Secteur public | Privé | TOTAL |
 |---|---|---|---|
-| 2024 | 1 000 | | 1 000 |
-| 2025 | 300 | 700 | 1 000 |
+| Exercice 2024 | 1 000 | | 1 000 |
+| Exercice 2025 | 300 | 700 | 1 000 |
 | **TOTAL** | 1 300 | 700 | 2 000 |
 
 La requête renvoie 3 colonnes (`exercice`, `categorie`, `montant_encaisse`), totaux compris. C'est Metabase qui met les catégories en colonnes. Une nouvelle catégorie créée dans Odoo apparaît donc toute seule.

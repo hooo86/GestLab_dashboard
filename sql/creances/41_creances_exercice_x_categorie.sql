@@ -64,7 +64,7 @@ restes AS (
   WHERE f.montant - COALESCE(r.montant, 0) <> 0
 )
 SELECT
-  CASE WHEN GROUPING(exercice)  = 1 THEN 'TOTAL' ELSE exercice::text END AS exercice,
+  CASE WHEN GROUPING(exercice)  = 1 THEN 'TOTAL' ELSE 'Exercice ' || exercice::text END AS exercice,
   CASE WHEN GROUPING(categorie) = 1 THEN 'TOTAL' ELSE categorie END      AS categorie,
   SUM(creance)                                                          AS creances
 FROM restes

@@ -47,7 +47,7 @@ SELECT
   CASE WHEN GROUPING(categorie) = 1 THEN 'TOTAL' ELSE categorie END AS categorie,
   CASE WHEN GROUPING(categorie) = 1 THEN ''
        WHEN GROUPING(exercice)  = 1 THEN 'Total catégorie'
-       ELSE exercice::text END                                       AS exercice,
+       ELSE 'Exercice ' || exercice::text END                                       AS exercice,
   COUNT(DISTINCT facture_id)                                         AS nb_factures,
   SUM(montant)                                                       AS montant_encaisse
 FROM encaissements

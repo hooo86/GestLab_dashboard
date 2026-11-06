@@ -37,8 +37,8 @@ Visualisation : **Tableau**, ou **Lignes** avec X = mois et Y = creances_fin_moi
 
 | exercice | Secteur public | Privé | TOTAL |
 |---|---|---|---|
-| 2024 | 600 | | 600 |
-| 2025 | 300 | 500 | 800 |
+| Exercice 2024 | 600 | | 600 |
+| Exercice 2025 | 300 | 500 | 800 |
 | **TOTAL** | 900 | 500 | 1 400 |
 
 Les règles sont les mêmes que pour la carte 40 : règlements et avoirs lettrés pris à leur date d'effet.

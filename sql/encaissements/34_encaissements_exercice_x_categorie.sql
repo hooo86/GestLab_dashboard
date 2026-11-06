@@ -45,7 +45,7 @@ WITH encaissements AS (
     [[AND {{unite}}]]
 )
 SELECT
-  CASE WHEN GROUPING(exercice)  = 1 THEN 'TOTAL' ELSE exercice::text END AS exercice,
+  CASE WHEN GROUPING(exercice)  = 1 THEN 'TOTAL' ELSE 'Exercice ' || exercice::text END AS exercice,
   CASE WHEN GROUPING(categorie) = 1 THEN 'TOTAL' ELSE categorie END      AS categorie,
   SUM(montant)                                                          AS montant_encaisse
 FROM encaissements
