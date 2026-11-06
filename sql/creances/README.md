@@ -30,3 +30,23 @@ Le mois en cours s'arrête à aujourd'hui. Sa créance de fin de mois correspond
 - `unite` : **Filtre de champ** → **Operating Unit → Name**
 
 Visualisation : **Tableau**, ou **Lignes** avec X = mois et Y = creances_fin_mois.
+
+## Créances par exercice (lignes) et classe client (colonnes) — carte 41
+
+`41_creances_exercice_x_categorie.sql` donne le **reste à encaisser à une date d'arrêté**. Les lignes sont l'**exercice de la facture** (année de la date de facturation), les colonnes la **classe client**, avec une colonne et une ligne **TOTAL**.
+
+| exercice | Secteur public | Privé | TOTAL |
+|---|---|---|---|
+| 2024 | 600 | | 600 |
+| 2025 | 300 | 500 | 800 |
+| **TOTAL** | 900 | 500 | 1 400 |
+
+Les règles sont les mêmes que pour la carte 40 : règlements et avoirs lettrés pris à leur date d'effet.
+
+Dans Metabase : **Visualisation → Tableau** → ⚙️ → **Pivoter le tableau** (colonne de pivot = `categorie`, cellule = `creances`).
+
+Variables (facultatives) :
+- `date_arrete` : **Date**, libellé « Date d'arrêté ». Sans valeur, c'est aujourd'hui. Par exemple `31/12/2025` donne la situation de clôture 2025.
+- `exercice` : **Nombre**
+- `categorie` : **Texte** (liste : question 22)
+- `unite` : **Filtre de champ** → **Operating Unit → Name**
