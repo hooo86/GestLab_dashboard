@@ -2,25 +2,34 @@
 -- nombre de factures du mois, reste à encaisser
 -- Visualisation : Tableau ; ou une carte « Nombre » par colonne avec le filtre {{unite}}
 -- Filtre Metabase : {{unite}}
-SELECT
-  COALESCE(operating_unit.name, 'Sans unité') AS unite,
-  SUM(account_move.amount_untaxed_signed) FILTER (
-    WHERE account_move.invoice_date >= date_trunc('month', CURRENT_DATE)) AS ca_mois,
-  SUM(account_move.amount_untaxed_signed) FILTER (
-    WHERE account_move.invoice_date >= date_trunc('year', CURRENT_DATE))  AS ca_annee,
-  COUNT(*) FILTER (
-    WHERE account_move.move_type = 'out_invoice'
-      AND account_move.invoice_date >= date_trunc('month', CURRENT_DATE)) AS nb_factures_mois,
-  SUM(account_move.amount_residual) FILTER (
-    WHERE account_move.move_type = 'out_invoice'
-      AND account_move.payment_state IN ('not_paid', 'partial'))          AS reste_a_encaisser
-FROM account_move
-LEFT JOIN operating_unit ON operating_unit.id = account_move.operating_unit_id
-WHERE account_move.move_type IN ('out_invoice', 'out_refund')
-  AND account_move.state = 'posted'
-  AND NOT EXISTS (  -- famille client « client interne » (id 1005) exclue
-    SELECT 1 FROM res_partner x
-    WHERE x.id = account_move.commercial_partner_id AND x.family_customer = 1005)
-  [[AND {{unite}}]]
-GROUP BY 1
-ORDER BY ca_annee DESC NULLS LAST;
+-- Dernière ligne : TOTAL
+WITH detail AS (
+  SELECT
+    COALESCE(operating_unit.name, 'Sans unité') AS unite,
+    SUM(account_move.amount_untaxed_signed) FILTER (
+      WHERE account_move.invoice_date >= date_trunc('month', CURRENT_DATE)) AS ca_mois,
+    SUM(account_move.amount_untaxed_signed) FILTER (
+      WHERE account_move.invoice_date >= date_trunc('year', CURRENT_DATE))  AS ca_annee,
+    COUNT(*) FILTER (
+      WHERE account_move.move_type = 'out_invoice'
+        AND account_move.invoice_date >= date_trunc('month', CURRENT_DATE)) AS nb_factures_mois,
+    SUM(account_move.amount_residual) FILTER (
+      WHERE account_move.move_type = 'out_invoice'
+        AND account_move.payment_state IN ('not_paid', 'partial'))          AS reste_a_encaisser
+  FROM account_move
+  LEFT JOIN operating_unit ON operating_unit.id = account_move.operating_unit_id
+  WHERE account_move.move_type IN ('out_invoice', 'out_refund')
+    AND account_move.state = 'posted'
+    AND NOT EXISTS (  -- famille client « client interne » (id 1005) exclue
+      SELECT 1 FROM res_partner x
+      WHERE x.id = account_move.commercial_partner_id AND x.family_customer = 1005)
+    [[AND {{unite}}]]
+  GROUP BY 1
+)
+SELECT * FROM (
+  SELECT * FROM detail
+  UNION ALL
+  SELECT 'TOTAL', SUM(ca_mois), SUM(ca_annee), SUM(nb_factures_mois), SUM(reste_a_encaisser)
+  FROM detail
+) t
+ORDER BY (unite = 'TOTAL'), ca_annee DESC NULLS LAST;
