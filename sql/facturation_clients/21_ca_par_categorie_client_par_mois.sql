@@ -6,20 +6,25 @@
 -- Sans filtre Année : année en cours.
 SELECT
   date_trunc('month', account_move.invoice_date)::date AS mois,
-  COALESCE(s.name->>'fr_FR', s.name->>'en_US', p.family_customer, 'Sans catégorie') AS categorie,
+  cat.categorie AS categorie,
   SUM(account_move.amount_untaxed_signed) AS ca_ht
 FROM account_move
 JOIN res_partner p ON p.id = account_move.commercial_partner_id AND p.is_customer
-LEFT JOIN ir_model_fields_selection s
-       ON s.value = p.family_customer
-      AND s.field_id = (SELECT id FROM ir_model_fields
-                        WHERE model = 'res.partner' AND name = 'family_customer')
+-- Catégorie : lien vers family.customer (nom traduisible ou non)
+LEFT JOIN family_customer fc ON fc.id = p.family_customer
+LEFT JOIN LATERAL (
+  SELECT COALESCE(
+    CASE WHEN jsonb_typeof(to_jsonb(fc.name)) = 'object'
+         THEN COALESCE(to_jsonb(fc.name)->>'fr_FR', to_jsonb(fc.name)->>'en_US')
+         ELSE to_jsonb(fc.name)#>>'{}' END,
+    'Sans catégorie') AS categorie
+) cat ON true
 LEFT JOIN operating_unit ON operating_unit.id = account_move.operating_unit_id
 WHERE account_move.move_type IN ('out_invoice', 'out_refund')
   AND account_move.state = 'posted'
   AND EXTRACT(YEAR FROM account_move.invoice_date) =
       COALESCE([[{{annee}}, ]] EXTRACT(YEAR FROM CURRENT_DATE))
   [[AND {{unite}}]]
-  [[AND COALESCE(s.name->>'fr_FR', s.name->>'en_US', p.family_customer, 'Sans catégorie') = {{categorie}}]]
+  [[AND cat.categorie = {{categorie}}]]
 GROUP BY 1, 2
 ORDER BY 1, 3 DESC;

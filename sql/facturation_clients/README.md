@@ -1,14 +1,10 @@
 # Facturation par catégorie client
 
-La **catégorie client** est le champ **`family_customer`** de la **société cliente** de la facture. Son libellé est affiché tel qu'il apparaît dans Odoo.
+La **catégorie client** est le champ **`family_customer`** de la **société cliente** de la facture. C'est un lien (many2one) vers le modèle **`family.customer`** ; on affiche le nom de la catégorie.
 
 Seuls les partenaires dont la case **`is_customer`** est cochée sont pris en compte.
 
 Les montants sont en HT, sur les factures clients validées, avoirs déduits. Un client sans catégorie apparaît dans « Sans catégorie ».
-
-> Si la requête renvoie une erreur sur `family_customer`, envoyez le résultat de :
-> `SELECT ttype, relation FROM ir_model_fields WHERE model = 'res.partner' AND name = 'family_customer';`
-> Les requêtes supposent un champ de type **sélection**.
 
 | Fichier | Indicateur | Visualisation |
 |---|---|---|
