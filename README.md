@@ -87,6 +87,10 @@ Le dossier [`sql/facturation_clients/`](sql/facturation_clients/) contient le CA
 
 Le dossier [`sql/encaissements/`](sql/encaissements/) contient les encaissements par mois. Seuls les paiements lettrés avec une facture sont comptés, à la date du paiement, ou à la date de la facture si le paiement est antérieur. Le mode d'emploi est dans son [README](sql/encaissements/README.md).
 
+### Balance des créances
+
+Le dossier [`sql/creances/`](sql/creances/) contient la balance des créances clients en fin de mois. Les règlements et avoirs lettrés sont pris à leur date d'effet. Le mode d'emploi est dans son [README](sql/creances/README.md).
+
 Les requêtes sont prévues pour **Odoo 16, 17 et 18**.
 
 > **Clients internes exclus :** toutes les requêtes de facturation ignorent les clients de la **famille client id 1005** (« client interne », champ `family_customer`). Pour exclure une autre famille, cherchez `1005` dans les fichiers `.sql` et écrivez `x.family_customer IN (1005, 1234)`.
