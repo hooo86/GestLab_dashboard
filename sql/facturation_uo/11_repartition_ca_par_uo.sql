@@ -1,7 +1,7 @@
 -- Répartition du CA HT entre unités opérationnelles, avec la part en %
 -- Visualisation : Camembert / Anneau (dimension = unite, mesure = ca_ht)
 --                 ou Tableau pour voir les pourcentages
--- Filtres Metabase : {{periode}} et {{unite}}
+-- Filtres Metabase : {{annee}} et {{unite}}
 SELECT
   COALESCE(operating_unit.name, 'Sans unité')  AS unite,
   COUNT(*) FILTER (WHERE account_move.move_type = 'out_invoice') AS nb_factures,
@@ -12,7 +12,7 @@ FROM account_move
 LEFT JOIN operating_unit ON operating_unit.id = account_move.operating_unit_id
 WHERE account_move.move_type IN ('out_invoice', 'out_refund')
   AND account_move.state = 'posted'
-  [[AND {{periode}}]]
+  [[AND EXTRACT(YEAR FROM account_move.invoice_date) = {{annee}}]]
   [[AND {{unite}}]]
 GROUP BY 1
 ORDER BY ca_ht DESC;

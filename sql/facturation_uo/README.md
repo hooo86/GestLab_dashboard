@@ -22,40 +22,45 @@ ORDER BY nb_factures DESC;
 
 | Fichier | Indicateur | Visualisation | Filtres |
 |---|---|---|---|
-| `10_ca_par_uo_par_mois.sql` | CA HT par unité et par mois | Barres empilées (série = unite) | période, unité |
-| `11_repartition_ca_par_uo.sql` | Part de chaque unité dans le CA | Anneau | période, unité |
+| `10_ca_par_uo_par_mois.sql` | CA HT par unité et par mois | Barres empilées (série = unite) | année, unité |
+| `11_repartition_ca_par_uo.sql` | Part de chaque unité dans le CA | Anneau | année, unité |
 | `12_ca_uo_annee_n_vs_n1.sql` | CA depuis le 1er janvier vs même période N-1 | Tableau ou barres groupées | unité |
 | `13_impayes_par_uo_anciennete.sql` | Reste à encaisser par ancienneté du retard | Barres empilées | unité |
-| `14_top_clients_par_uo.sql` | 10 meilleurs clients de chaque unité | Tableau | période, unité |
+| `14_top_clients_par_uo.sql` | 10 meilleurs clients de chaque unité | Tableau | année, unité |
 | `15_chiffres_cles_par_uo.sql` | CA du mois, CA de l'année, nb factures, à encaisser | Tableau ou cartes « Nombre » | unité |
+| `16_ca_par_uo_par_annee.sql` | CA HT par unité et par année | Barres groupées (X = annee, série = unite) | année, unité |
 
 ## 2. Régler les filtres dans Metabase (une seule fois par question)
 
-Les requêtes contiennent `{{periode}}` et `{{unite}}`. Après avoir collé la requête, Metabase ouvre à droite le panneau **Variables**. Réglez :
+Les requêtes contiennent `{{annee}}` et `{{unite}}`. Après avoir collé la requête, Metabase ouvre à droite le panneau **Variables**. Réglez :
 
 **`unite`**
 - Type de variable : **Filtre de champ**
 - Champ : **Operating Unit → Name**
 - Type de widget : **Chaîne de caractères** (liste déroulante)
 
-**`periode`**
-- Type de variable : **Filtre de champ**
-- Champ : **Account Move → Invoice Date**
-- Type de widget : **Toutes les options de date**
+**`annee`**
+- Type de variable : **Nombre**
+- Libellé : **Année**
+- (facultatif) Valeur par défaut : l'année en cours, par exemple `2026`
 
 Les filtres sont facultatifs : sans valeur, la requête prend tout.
 
 ## 3. Le tableau de bord « Facturation par unité »
 
 1. Créez un tableau de bord **Facturation par unité**.
-2. Ajoutez les 6 questions, dans cette disposition :
+2. Ajoutez les 7 questions, dans cette disposition :
    ```
    [ 15 Chiffres clés — toute la largeur          ]
    [ 10 CA par mois — toute la largeur            ]
    [ 11 Répartition    ][ 12 N vs N-1             ]
    [ 13 Impayés        ][ 14 Top clients          ]
+   [ 16 CA par année — toute la largeur           ]
    ```
 3. Cliquez sur ✏️ puis **Ajouter un filtre** :
    - **Unité** (type Texte) : reliez-le à la variable `unite` de chaque carte.
-   - **Période** (type Date, « Toutes les options ») : reliez-le à `periode` sur les cartes 10, 11 et 14.
-4. Enregistrez. Un seul choix d'unité ou de période met alors toutes les cartes à jour.
+   - **Année** (type **Nombre**, « Égal à ») : reliez-le à `annee` sur les cartes 10, 11, 14 et 16.
+     Pour avoir une liste déroulante : dans les réglages du filtre, choisissez **Valeurs → Liste personnalisée** et saisissez les années (2023, 2024, 2025, 2026…).
+4. Enregistrez. Un seul choix d'unité ou d'année met alors toutes les cartes à jour.
+
+> Les cartes 12, 13 et 15 ne suivent pas le filtre Année : elles comparent l'année en cours à l'an dernier ou montrent les impayés du moment.

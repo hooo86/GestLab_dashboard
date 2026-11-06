@@ -1,6 +1,6 @@
 -- 10 meilleurs clients de chaque unité opérationnelle (CA HT)
 -- Visualisation : Tableau (ou Barres horizontales avec un filtre {{unite}})
--- Filtres Metabase : {{periode}} et {{unite}}
+-- Filtres Metabase : {{annee}} et {{unite}}
 SELECT unite, rang, client, ca_ht
 FROM (
   SELECT
@@ -16,7 +16,7 @@ FROM (
   LEFT JOIN res_partner p  ON p.id = account_move.commercial_partner_id
   WHERE account_move.move_type IN ('out_invoice', 'out_refund')
     AND account_move.state = 'posted'
-    [[AND {{periode}}]]
+    [[AND EXTRACT(YEAR FROM account_move.invoice_date) = {{annee}}]]
     [[AND {{unite}}]]
   GROUP BY 1, 2
 ) t
