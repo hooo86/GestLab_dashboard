@@ -17,10 +17,12 @@ Encaissements des factures clients, mois par mois.
 |---|---|---|
 | `30_encaissements_par_mois.sql` | Montant encaissé et nombre de factures par mois | Barres (X = mois, Y = montant_encaisse) |
 | `31_encaissements_par_uo_tableau_mensuel.sql` | Une ligne par unité, une colonne par mois, total + ligne TOTAL | Tableau |
+| `32_encaissements_par_categorie_tableau_mensuel.sql` | Une ligne par classe client (`family_customer`), une colonne par mois, total + ligne TOTAL | Tableau |
 
 ## Variables à régler dans Metabase
 
 - `annee` : type **Nombre**, libellé « Année », valeur par défaut **2026**. Sans valeur, c'est l'année en cours.
 - `unite` : **Filtre de champ** → **Operating Unit → Name**
+- `categorie` (carte 32) : type **Texte**, libellé « Classe client ». Liste déroulante : **Valeurs → Depuis une autre question** → « Liste des catégories clients » (question 22).
 
 L'année filtre la **date de l'encaissement** : une facture de décembre 2025 payée en janvier 2026 compte en 2026.
