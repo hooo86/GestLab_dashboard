@@ -4,7 +4,9 @@
 -- Visualisation : Barres (X = mois, Y = montant_encaisse)
 -- Filtres Metabase : {{annee}} (Nombre, défaut 2026),
 --                    {{unite}} (Filtre de champ → Operating Unit → Name)
--- Sans filtre Année : année en cours.
+-- Sans aucun filtre (année ni dates) : année en cours.
+-- Période d'encaissement :
+--   {{date_debut}} / {{date_fin}}  Date : période d'encaissement (du … au …), facultatives
 WITH encaissements AS (
   -- Une ligne = un lettrage entre une facture client et un paiement (banque / caisse).
   -- Les paiements non lettrés (montants en circulation) ne sont pas comptés.
@@ -27,6 +29,9 @@ WITH encaissements AS (
     AND NOT EXISTS (  -- famille client « client interne » (id 1005) exclue
       SELECT 1 FROM res_partner x
       WHERE x.id = account_move.commercial_partner_id AND x.family_customer = 1005)
+    -- Filtre sur la date d'encaissement (date du paiement, ou de la facture si antérieure)
+    [[AND GREATEST(pay.date, account_move.invoice_date) >= {{date_debut}}]]
+    [[AND GREATEST(pay.date, account_move.invoice_date) <= {{date_fin}}]]
     [[AND {{unite}}]]
 )
 SELECT
@@ -34,7 +39,10 @@ SELECT
   COUNT(DISTINCT facture_id)            AS nb_factures,
   SUM(montant)                          AS montant_encaisse
 FROM encaissements
-WHERE EXTRACT(YEAR FROM date_encaissement) =
-      COALESCE([[{{annee}}, ]] EXTRACT(YEAR FROM CURRENT_DATE))
+WHERE 1 = 1
+    [[AND EXTRACT(YEAR FROM date_encaissement) = {{annee}}]]
+    -- sans aucun filtre (année ni dates) : année en cours
+    AND (EXTRACT(YEAR FROM date_encaissement) = EXTRACT(YEAR FROM CURRENT_DATE)
+      [[OR {{annee}} IS NOT NULL]] [[OR {{date_debut}} IS NOT NULL]] [[OR {{date_fin}} IS NOT NULL]])
 GROUP BY 1
 ORDER BY 1;

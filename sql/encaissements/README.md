@@ -21,7 +21,8 @@ Encaissements des factures clients, mois par mois.
 
 ## Variables à régler dans Metabase
 
-- `annee` : type **Nombre**, libellé « Année », valeur par défaut **2026**. Sans valeur, c'est l'année en cours.
+- `annee` : type **Nombre**, libellé « Année ». Sans aucun filtre (ni année, ni dates), c'est l'année en cours.
+- `date_debut` et `date_fin` : type **Date**, libellés « Encaissé du » et « Encaissé au ». Elles filtrent sur la **date d'encaissement** (date du paiement, ou date de la facture si le paiement est antérieur). Elles existent sur les cartes 30 à 34 et sont facultatives : on peut ne remplir que l'une des deux.
 - `unite` : **Filtre de champ** → **Operating Unit → Name**
 - `categorie` (carte 32) : type **Texte**, libellé « Classe client ». Liste déroulante : **Valeurs → Depuis une autre question** → « Liste des catégories clients » (question 22).
 
@@ -56,3 +57,9 @@ La requête renvoie 3 colonnes (`exercice`, `categorie`, `montant_encaisse`), to
 Dans Metabase : **Visualisation → Tableau** → ⚙️ → activez **Pivoter le tableau** (colonne de pivot = `categorie`, cellule = `montant_encaisse`).
 
 Variables : les mêmes que la carte 33 (`exercice`, `annee_encaissement`, `categorie`, `unite`).
+
+## Filtre « Période d'encaissement » sur le tableau de bord
+
+Le plus simple est d'ajouter **deux filtres Date → Date unique**, « Encaissé du » et « Encaissé au », reliés à `date_debut` et `date_fin` sur les cartes 30 à 34.
+
+> Sur les tableaux 31 et 32 (une colonne par mois), une période à cheval sur deux années additionne les mois de même nom : décembre 2025 et décembre 2026 tombent dans la même colonne « Déc. ». Gardez une période d'au plus 12 mois.

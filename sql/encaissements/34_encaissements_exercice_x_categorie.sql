@@ -10,6 +10,8 @@
 --   {{annee_encaissement}}  Nombre : année où l'argent est rentré
 --   {{categorie}}           Texte
 --   {{unite}}               Filtre de champ → Operating Unit → Name
+-- Période d'encaissement :
+--   {{date_debut}} / {{date_fin}}  Date : période d'encaissement (du … au …), facultatives
 WITH encaissements AS (
   SELECT
     cat.categorie                                     AS categorie,
@@ -43,6 +45,9 @@ WITH encaissements AS (
     [[AND EXTRACT(YEAR FROM account_move.invoice_date) = {{exercice}}]]
     [[AND EXTRACT(YEAR FROM GREATEST(pay.date, account_move.invoice_date)) = {{annee_encaissement}}]]
     [[AND cat.categorie = {{categorie}}]]
+    -- Filtre sur la date d'encaissement (date du paiement, ou de la facture si antérieure)
+    [[AND GREATEST(pay.date, account_move.invoice_date) >= {{date_debut}}]]
+    [[AND GREATEST(pay.date, account_move.invoice_date) <= {{date_fin}}]]
     [[AND {{unite}}]]
 )
 SELECT
