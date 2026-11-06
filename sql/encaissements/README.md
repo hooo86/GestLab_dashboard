@@ -63,3 +63,13 @@ Variables : les mêmes que la carte 33 (`exercice`, `annee_encaissement`, `categ
 Le plus simple est d'ajouter **deux filtres Date → Date unique**, « Encaissé du » et « Encaissé au », reliés à `date_debut` et `date_fin` sur les cartes 30 à 34.
 
 > Sur les tableaux 31 et 32 (une colonne par mois), une période à cheval sur deux années additionne les mois de même nom : décembre 2025 et décembre 2026 tombent dans la même colonne « Déc. ». Gardez une période d'au plus 12 mois.
+
+## Par étiquette client : OPGI, AADL, ENPI, DEP, DUAC, DL, VN, CTC
+
+Les colonnes sont **fixes** : OPGI, AADL, ENPI, DEP, DUAC, DL, VN, CTC, **Autres** (client sans aucune de ces étiquettes) et **TOTAL**. Les lignes sont les exercices de facture, avec une ligne **TOTAL**. Visualisation : **Tableau**, sans pivot.
+
+- On lit les étiquettes de la **société cliente** et du **contact** de la facture. Les majuscules et les espaces sont ignorés (« aadl » = AADL).
+- Un client qui a **plusieurs** de ces étiquettes est compté **une seule fois**, dans la première de la liste ci-dessus (OPGI avant AADL, etc.).
+- Pour ajouter ou retirer une étiquette, modifiez la liste `VALUES (1, 'OPGI'), …` et les colonnes `FILTER (WHERE etiquette = …)` dans le fichier.
+
+| `35_encaissements_exercice_x_etiquette.sql` | Encaissements : exercice × étiquette. Variables : `exercice` (Nombre), `date_debut` / `date_fin` (Date), `unite` (Filtre de champ). |

@@ -50,3 +50,13 @@ Variables (facultatives) :
 - `exercice` : **Nombre**
 - `categorie` : **Texte** (liste : question 22)
 - `unite` : **Filtre de champ** → **Operating Unit → Name**
+
+## Par étiquette client : OPGI, AADL, ENPI, DEP, DUAC, DL, VN, CTC
+
+Les colonnes sont **fixes** : OPGI, AADL, ENPI, DEP, DUAC, DL, VN, CTC, **Autres** (client sans aucune de ces étiquettes) et **TOTAL**. Les lignes sont les exercices de facture, avec une ligne **TOTAL**. Visualisation : **Tableau**, sans pivot.
+
+- On lit les étiquettes de la **société cliente** et du **contact** de la facture. Les majuscules et les espaces sont ignorés (« aadl » = AADL).
+- Un client qui a **plusieurs** de ces étiquettes est compté **une seule fois**, dans la première de la liste ci-dessus (OPGI avant AADL, etc.).
+- Pour ajouter ou retirer une étiquette, modifiez la liste `VALUES (1, 'OPGI'), …` et les colonnes `FILTER (WHERE etiquette = …)` dans le fichier.
+
+| `42_creances_exercice_x_etiquette.sql` | Créances à une date d'arrêté : exercice × étiquette. Variables : `date_arrete` (Date), `exercice` (Nombre), `unite` (Filtre de champ). |
