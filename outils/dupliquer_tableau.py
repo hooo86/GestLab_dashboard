@@ -2,7 +2,7 @@
 """Copie un tableau de bord Metabase pour chaque utilisateur, limité à SES unités opérationnelles.
 
 Les unités de chaque utilisateur sont lues dans Odoo (onglet « Unités opérationnelles »
-de la fiche utilisateur : table operating_unit_users_rel). L'utilisateur Metabase est
+de la fiche utilisateur, champ operating_unit_ids). L'utilisateur Metabase est
 retrouvé par son e-mail, qui doit être égal à son identifiant (login) Odoo.
 
 Pour chaque utilisateur :
@@ -33,15 +33,22 @@ import urllib.request
 # AND TRUE /* perimetre:alias */  ou  /* perimetre:alias.colonne */ (colonne par défaut : operating_unit_id)
 REPERE = re.compile(r"AND TRUE /\* perimetre:(\w+)(?:\.(\w+))? \*/")
 
+# Où Odoo range les unités de chaque utilisateur : lu dans la définition du champ
+REQUETE_CHAMP_UNITES = """
+SELECT relation_table, column1, column2
+FROM ir_model_fields
+WHERE model = 'res.users' AND name = '{champ}' AND ttype = 'many2many'
+"""
+
 REQUETE_UNITES_ODOO = """
 SELECT lower(u.login)                       AS login,
        COALESCE(p.name, u.login)            AS nom,
        string_agg(ou.id::text, ',' ORDER BY ou.id)     AS ids,
        string_agg(ou.name, ', ' ORDER BY ou.name)      AS unites
 FROM res_users u
-JOIN res_partner p               ON p.id = u.partner_id
-JOIN operating_unit_users_rel r  ON r.user_id = u.id
-JOIN operating_unit ou           ON ou.id = r.poid
+JOIN res_partner p   ON p.id = u.partner_id
+JOIN "{table}" r     ON r."{col_user}" = u.id
+JOIN operating_unit ou ON ou.id = r."{col_unite}"
 WHERE u.active
 GROUP BY u.login, p.name
 ORDER BY nom
@@ -107,16 +114,29 @@ def liste(rep):
     return rep.get("data", rep) if isinstance(rep, dict) else rep
 
 
-def lire_unites_odoo(mb, nom_base):
+def requete_odoo(mb, base_id, sql):
+    rep = mb.appel("POST", "/api/dataset", {"database": base_id, "type": "native", "native": {"query": sql}})
+    if rep.get("error"):
+        raise SystemExit("Erreur dans Odoo : " + str(rep["error"])[:300])
+    return rep["data"]["rows"]
+
+
+def lire_unites_odoo(mb, nom_base, champ):
     base = next((b for b in liste(mb.appel("GET", "/api/database")) if b["name"] == nom_base), None)
     if not base:
         raise SystemExit(f"Base « {nom_base} » introuvable dans Metabase (option --base).")
-    rep = mb.appel("POST", "/api/dataset", {"database": base["id"], "type": "native",
-                                            "native": {"query": REQUETE_UNITES_ODOO}})
-    if rep.get("error"):
-        raise SystemExit("Lecture des unités Odoo impossible : " + str(rep["error"])[:300])
+    lignes = requete_odoo(mb, base["id"], REQUETE_CHAMP_UNITES.format(champ=champ))
+    if not lignes:
+        raise SystemExit(f"Champ « {champ} » (many2many) introuvable sur res.users. "
+                         "Indiquez le bon nom avec --champ.")
+    table, col_user, col_unite = lignes[0]
+    for nom in (table, col_user, col_unite):
+        if not re.fullmatch(r"\w+", nom or ""):
+            raise SystemExit(f"Nom de table ou de colonne inattendu : {nom!r}")
+    print(f"Unités des utilisateurs lues dans {table} ({col_user} → {col_unite})")
+    sql = REQUETE_UNITES_ODOO.format(table=table, col_user=col_user, col_unite=col_unite)
     return [{"login": r[0], "nom": r[1], "ids": [int(x) for x in r[2].split(",")], "unites": r[3]}
-            for r in rep["data"]["rows"]]
+            for r in requete_odoo(mb, base["id"], sql)]
 
 
 def trouver_ou_creer_collection(mb, nom, parent_id):
@@ -184,6 +204,7 @@ def main():
     ap.add_argument("--tableau", type=int, required=True, help="id du tableau de bord modèle (adresse /dashboard/5-…)")
     ap.add_argument("--utilisateur", action="append", default=[], help="login Odoo à traiter (répétable) ; par défaut : tous")
     ap.add_argument("--base", default="Odoo", help="nom de la base Odoo dans Metabase")
+    ap.add_argument("--champ", default="operating_unit_ids", help="champ Odoo des unités de l'utilisateur (res.users)")
     ap.add_argument("--prefixe", default="Tableaux – ", help="préfixe du nom des collections")
     ap.add_argument("--collection-parent", type=int, help="id de la collection où créer les collections")
     ap.add_argument("--droits", action="store_true", help="créer le groupe et donner la lecture sur la collection")
@@ -193,7 +214,7 @@ def main():
     mb = Metabase(a.url, essai=a.essai)
     mb.connexion(a.email, os.environ.get("MB_PASSWORD") or getpass.getpass("Mot de passe Metabase : "))
 
-    personnes = lire_unites_odoo(mb, a.base)
+    personnes = lire_unites_odoo(mb, a.base, a.champ)
     if a.utilisateur:
         voulus = {u.lower() for u in a.utilisateur}
         personnes = [p for p in personnes if p["login"] in voulus]
