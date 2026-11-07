@@ -24,6 +24,10 @@ Seuls les articles **stockables valorisés** apparaissent. Les **catégories d'i
 - `date_debut` et `date_fin` : **Date**, libellés « Du » et « Au ». Sans valeur : du 1er janvier de l'année en cours à aujourd'hui.
 - `famille` : **Filtre de champ** → **Product Category → Complete Name**, choix multiple.
 
-## Limite
+## Unité opérationnelle
 
-La valorisation du stock n'est pas rattachée aux **unités opérationnelles** : ces cartes n'ont ni filtre Unité ni périmètre par utilisateur.
+Filtre `unite` : **Filtre de champ** → **Operating Unit → Name**, choix multiple. Il sert aussi au périmètre des copies par utilisateur.
+
+L'unité d'un mouvement est celle de l'**emplacement de stock** qui détient la marchandise : l'emplacement de **destination** pour une entrée, l'emplacement d'**origine** pour une sortie. Elle est cherchée sur l'emplacement, puis sur son **entrepôt**, puis sur le transfert et sur le mouvement, et le premier renseigné est retenu.
+
+Les **réévaluations de coût**, qui ne sont liées à aucun mouvement, n'ont pas d'unité : elles ne comptent que sans filtre Unité. Si aucune unité n'est renseignée nulle part dans votre Odoo, le filtre Unité renvoie des cartes vides.
