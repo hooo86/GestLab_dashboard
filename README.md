@@ -95,6 +95,10 @@ Le dossier [`sql/creances/`](sql/creances/) contient la balance des créances cl
 
 Le script [`outils/dupliquer_tableau.py`](outils/dupliquer_tableau.py) copie un tableau de bord pour chaque utilisateur. Chaque copie est limitée aux unités opérationnelles qui lui sont attribuées dans Odoo (il peut en avoir plusieurs), et rangée dans une collection qu'il est seul à voir. Le mode d'emploi est dans [`outils/README.md`](outils/README.md).
 
+### Valorisation du stock
+
+Le dossier [`sql/stock/`](sql/stock/) contient la valorisation du stock par famille d'articles et par article sur une période : valeur de départ, entrées, sorties et valeur finale. Le mode d'emploi est dans son [README](sql/stock/README.md).
+
 ### Ressources humaines
 
 Le dossier [`sql/rh/`](sql/rh/) contient la pyramide des âges des employés actifs (hommes / femmes, par tranche de 5 ans). Le mode d'emploi est dans son [README](sql/rh/README.md).
