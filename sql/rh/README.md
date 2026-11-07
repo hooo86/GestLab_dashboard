@@ -60,6 +60,7 @@ Toutes les requêtes suivent les mêmes règles :
 | Entrées / sorties par mois | `55_entrees_sorties_par_mois.sql` | Barres (X = mois, Y = entrees et sorties) |
 | Détail mensuel | `55_entrees_sorties_par_mois.sql` (même requête) | Tableau : effectif début et fin, taux de sortie |
 | Sorties par motif | `56_sorties_par_motif.sql` | Anneau (motif de départ de la fiche employé) |
+| Liste des départs | `60_liste_departs.sql` | Tableau : date de départ, nom, unité, département, poste, motif, date de recrutement, ancienneté et âge au départ |
 
 - **Entrée** : date de recrutement (`date_ru`) dans le mois. **Sortie** : date de départ (`departure_date`) dans le mois.
 - **Taux de sortie** = sorties du mois / effectif au début du mois.
@@ -68,7 +69,10 @@ Toutes les requêtes suivent les mêmes règles :
 ```
 [ 55 Entrées / sorties par mois (graphique, toute la largeur)   ]
 [ 55 Détail mensuel (tableau)   ][ 56 Sorties par motif         ]
+[ 60 Liste des départs (toute la largeur)                       ]
 ```
+
+Carte 60, variables : `annee` (Nombre), `date_debut` / `date_fin` (Date, période de départ), `motif` (Texte). Sans aucun filtre, c'est l'année en cours. Reliez le filtre **Année** du tableau de bord à `annee` sur les cartes 55, 56 et 60.
 
 ## Tableau de bord 3 — Ancienneté et retraites (filtres : Date d'arrêté, Âge de la retraite)
 
