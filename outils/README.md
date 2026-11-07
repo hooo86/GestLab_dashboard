@@ -1,56 +1,54 @@
-# Tableaux de bord par direction régionale (DR)
+# Un tableau de bord par utilisateur, limité à ses unités opérationnelles
 
-La version gratuite de Metabase ne sait pas limiter les lignes visibles selon l'utilisateur. On crée donc **une copie de chaque tableau de bord par DR**. Dans chaque copie, la DR est écrite en dur dans le SQL et la copie est rangée dans une collection réservée à cette DR. L'utilisateur, qui n'a que le droit de lecture, ne peut pas changer de DR.
+La version gratuite de Metabase ne sait pas limiter les lignes visibles selon l'utilisateur. Le script `dupliquer_tableau.py` crée donc **une copie du tableau de bord par utilisateur**, limitée aux **unités opérationnelles** qui lui sont attribuées dans **Odoo**. Un utilisateur peut avoir **plusieurs unités**.
 
-Le script `dupliquer_par_dr.py` fait ces copies automatiquement.
+Une DR est une unité comme les autres. Un utilisateur qui a l'unité « DR Centre » voit les factures de cette unité, pas celles de ses laboratoires. Pour qu'il les voie aussi, attribuez-lui ces unités dans Odoo.
 
-## 1. Préparer le tableau de bord modèle (une fois)
+## Comment ça marche
+
+- Les unités de chaque utilisateur sont lues dans Odoo : fiche utilisateur → onglet **Unités opérationnelles**.
+- L'utilisateur Metabase est retrouvé par son **e-mail**, qui doit être égal à son **identifiant de connexion Odoo**.
+- Chaque requête du dépôt contient le repère `AND TRUE /* perimetre:… */`. Sur le tableau de bord modèle, il ne filtre rien. Dans chaque copie, le script le remplace par `… operating_unit_id IN (ses unités)`.
+- Avec `--droits`, le script crée le groupe « Périmètre – Nom », y ajoute l'utilisateur et lui donne la **lecture seule** sur **sa** collection.
+
+## 1. Préparer (une fois)
 
 1. Sur la VM Metabase : `cd ~/GestLab_dashboard && git pull`.
-2. Dans le tableau de bord modèle, **recollez chaque question** depuis le fichier du dépôt. Toutes les requêtes de facturation, encaissements et créances contiennent maintenant le filtre `{{dr}}`.
-3. Dans chaque question, réglez la variable `dr` : type **Texte**, libellé « Direction régionale », **non obligatoire**.
-4. (Facultatif) Sur le modèle, ajoutez un filtre **Direction régionale** relié à `dr`. C'est utile pour la direction générale, qui peut ainsi choisir une DR. Le script le retire des copies.
-
-La DR d'une facture est celle de son **unité opérationnelle** : l'unité elle-même si `is_dr` est coché, sinon `parent_dr_id`.
+2. Dans le tableau de bord modèle, **recollez chaque question** depuis le fichier du dépôt, pour que chacune contienne le repère `perimetre`.
+3. Invitez chaque utilisateur dans Metabase avec **son login Odoo comme e-mail** (Admin → Personnes → Inviter).
+4. Réglez une fois les droits de base, dans **Admin → Autorisations** :
+   - **Collections** : groupe **Tous les utilisateurs** = **Pas d'accès** sur « Nos analyses » et sur le modèle ;
+   - **Données → Odoo** : groupe **Tous les utilisateurs** : **Voir les données = Peut voir**, **Créer des requêtes = Non**. C'est indispensable : sinon un utilisateur pourrait écrire son propre SQL et tout voir.
 
 ## 2. Lancer le script (sur la VM Metabase)
 
-Retrouvez l'**id du tableau de bord** dans son adresse : `http://192.168.8.26:3000/dashboard/5-finance` → id **5**.
+L'id du tableau de bord modèle se lit dans son adresse : `http://192.168.8.26:3000/dashboard/5-finance` → **5**.
 
-Essai, qui ne modifie rien :
+Essai (ne modifie rien) :
 ```bash
-python3 outils/dupliquer_par_dr.py --email hocineinfo@gmail.com --tableau 5 --toutes-dr --essai
+python3 outils/dupliquer_tableau.py --email hocineinfo@gmail.com --tableau 5 --droits --essai
 ```
-Lancement réel, pour toutes les DR :
+Lancement réel, pour tous les utilisateurs qui ont des unités :
 ```bash
-python3 outils/dupliquer_par_dr.py --email hocineinfo@gmail.com --tableau 5 --toutes-dr
+python3 outils/dupliquer_tableau.py --email hocineinfo@gmail.com --tableau 5 --droits
 ```
-Pour une ou quelques DR seulement :
+Pour un ou quelques utilisateurs seulement :
 ```bash
-python3 outils/dupliquer_par_dr.py --email hocineinfo@gmail.com --tableau 5 --dr "DR Centre" --dr "DR Est"
+python3 outils/dupliquer_tableau.py --email hocineinfo@gmail.com --tableau 5 --droits --utilisateur ali@lnhc.dz
 ```
-Options utiles :
-- `--prefixe "Tableaux – "` : préfixe du nom des collections créées ;
-- `--collection-parent 12` : crée les collections DR dans la collection n° 12 ;
-- `--base Odoo` : nom de la base Odoo dans Metabase (pour `--toutes-dr`).
+Options : `--prefixe "Tableaux – "` (nom des collections), `--collection-parent 12`, `--base Odoo` (nom de la base Odoo dans Metabase).
 
-Le script demande votre mot de passe Metabase. Il crée une collection par DR, ou réutilise celle qui porte déjà ce nom.
+Le script affiche :
+- **« pas de compte Metabase »** : invitez la personne avec cet e-mail, puis relancez pour elle (`--utilisateur`) ;
+- **« PAS de repère de périmètre »** : cette question montrerait toutes les unités. Recollez-la depuis le dépôt dans le modèle, puis refaites la copie.
 
-⚠ Si le script signale une question **sans `{{dr}}`**, cette question montrerait toutes les DR. Recollez-la depuis le dépôt, puis relancez le script, ou supprimez-la de la copie.
+## Quand les unités changent dans Odoo, ou après une modification du modèle
 
-Pour refaire les copies après une modification du modèle : supprimez (mettez à la corbeille) les anciens tableaux de bord DR, puis relancez le script.
-
-## 3. Donner les droits (une fois par DR)
-
-1. **Admin → Personnes → Groupes** : créez un groupe par DR (par exemple « DR Centre ») et ajoutez-y ses utilisateurs.
-2. **Admin → Autorisations → Collections** :
-   - collection **« DR Centre »** : groupe « DR Centre » = **Afficher** ;
-   - toutes les autres collections, et « Nos analyses » : groupe « DR Centre » = **Pas d'accès** ;
-   - groupe **Tous les utilisateurs** : **Pas d'accès** partout.
-3. **Admin → Autorisations → Données → Odoo**, pour chaque groupe DR :
-   - **Voir les données** : Peut voir ;
-   - **Créer des requêtes** : **Non**. C'est indispensable : sinon l'utilisateur pourrait modifier le SQL et voir les autres DR.
+Chaque lancement crée une **nouvelle** copie. Mettez d'abord l'ancienne copie de la personne à la corbeille (dans sa collection), puis relancez le script pour elle :
+```bash
+python3 outils/dupliquer_tableau.py --email hocineinfo@gmail.com --tableau 5 --droits --utilisateur ali@lnhc.dz
+```
 
 ## Limite
 
-La liste déroulante du filtre **Unité** montre le nom de toutes les unités. Si un utilisateur choisit une unité d'une autre DR, les cartes restent vides : la DR fixée s'applique toujours.
+La liste déroulante du filtre **Unité** affiche le nom de toutes les unités. Si l'utilisateur choisit une unité qui n'est pas à lui, les cartes restent vides.

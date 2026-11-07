@@ -91,9 +91,9 @@ Le dossier [`sql/encaissements/`](sql/encaissements/) contient les encaissements
 
 Le dossier [`sql/creances/`](sql/creances/) contient la balance des créances clients en fin de mois. Les règlements et avoirs lettrés sont pris à leur date d'effet. Le mode d'emploi est dans son [README](sql/creances/README.md).
 
-### Tableaux de bord par direction régionale
+### Un tableau de bord par utilisateur (ses unités)
 
-Le script [`outils/dupliquer_par_dr.py`](outils/dupliquer_par_dr.py) copie un tableau de bord pour chaque DR. Dans chaque copie, la DR est fixée dans les requêtes et la copie est rangée dans une collection réservée à la DR. Le mode d'emploi est dans [`outils/README.md`](outils/README.md).
+Le script [`outils/dupliquer_tableau.py`](outils/dupliquer_tableau.py) copie un tableau de bord pour chaque utilisateur. Chaque copie est limitée aux unités opérationnelles qui lui sont attribuées dans Odoo (il peut en avoir plusieurs), et rangée dans une collection qu'il est seul à voir. Le mode d'emploi est dans [`outils/README.md`](outils/README.md).
 
 ### Ressources humaines
 
