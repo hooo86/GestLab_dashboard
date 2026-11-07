@@ -3,6 +3,7 @@
 -- (date du règlement, ou date de facture si antérieure) est au plus tard à la date d'arrêté.
 -- Affichage conseillé : tableau
 -- Filtre Metabase : {{date_arrete}} (Date ; sans valeur : aujourd'hui)
+-- Filtre Metabase : {{unite}} (Filtre de champ → Operating Unit → Name, facultatif)
 WITH parametres AS (
   SELECT COALESCE([[{{date_arrete}}::date, ]] CURRENT_DATE) AS date_arrete
 ),
@@ -11,6 +12,7 @@ factures AS (
          m.amount_total_signed AS montant_ttc
   FROM account_move m
   CROSS JOIN parametres
+  LEFT JOIN operating_unit ON operating_unit.id = m.operating_unit_id
   WHERE m.move_type = 'out_invoice'
     AND m.state = 'posted'
     AND m.journal_id = 1  -- journal « Factures clients » uniquement
@@ -18,6 +20,7 @@ factures AS (
       SELECT 1 FROM res_partner x
       WHERE x.id = m.commercial_partner_id AND x.family_customer = 1005)
     AND TRUE /* perimetre:m */  -- unités de l'utilisateur (remplacé par le script de copie)
+    [[AND {{unite}}]]
     AND m.invoice_date <= parametres.date_arrete
 ),
 reglements AS (
