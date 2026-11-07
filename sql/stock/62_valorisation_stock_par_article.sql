@@ -4,7 +4,7 @@
 -- sorties = mouvements de la période qui retirent du stock (quantité < 0), en valeur positive ;
 -- valeur finale = départ + entrées − sorties = valeur du stock à la fin de la période.
 -- Les réévaluations (quantité 0) vont en entrée ou en sortie selon leur signe.
--- Dates en heure d'Algérie. Source : stock_valuation_layer (valorisation Odoo).
+-- Catégories d'investissement (is_categorie_investissement = 1) exclues. Dates en heure d'Algérie. Source : stock_valuation_layer (valorisation Odoo).
 -- Visualisation : Tableau. Dernière ligne : TOTAL
 -- Filtres Metabase (facultatifs) :
 --   {{date_debut}} / {{date_fin}}  Date : période (sans valeur : du 1er janvier à aujourd'hui)
@@ -27,6 +27,8 @@ mouvements AS (
   LEFT JOIN product_category  ON product_category.id = product_template.categ_id
   CROSS JOIN parametres
   WHERE (stock_valuation_layer.create_date AT TIME ZONE 'UTC' AT TIME ZONE 'Africa/Algiers')::date <= parametres.fin
+    -- Catégories d'investissement exclues (is_categorie_investissement = 1)
+    AND COALESCE(product_category.is_categorie_investissement::int, 0) <> 1
     [[AND {{famille}}]]
 ),
 detail AS (

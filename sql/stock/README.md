@@ -17,7 +17,7 @@ Pour une période *du … au …* :
 
 Les **réévaluations** (changement de coût sans quantité) vont en entrée si elles augmentent la valeur, en sortie si elles la diminuent. Les dates sont en **heure d'Algérie**.
 
-Seuls les articles **stockables valorisés** apparaissent. Les familles sans aucun mouvement ni stock sont masquées.
+Seuls les articles **stockables valorisés** apparaissent. Les **catégories d'investissement** (`is_categorie_investissement` coché) sont **exclues**. Les familles sans aucun mouvement ni stock sont masquées.
 
 ## Variables Metabase (facultatives)
 
