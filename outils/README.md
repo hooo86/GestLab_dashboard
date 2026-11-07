@@ -7,7 +7,8 @@ Une DR est une unité comme les autres. Un utilisateur qui a l'unité « DR Cent
 ## Comment ça marche
 
 - Les unités de chaque utilisateur sont lues dans Odoo : fiche utilisateur → onglet **Unités opérationnelles**.
-- L'utilisateur Metabase est retrouvé par son **e-mail**, qui doit être égal à son **identifiant de connexion Odoo**.
+- L'utilisateur Metabase est retrouvé par son **e-mail** : le **login Odoo** s'il s'agit d'une adresse e-mail, sinon l'**e-mail de son contact** Odoo.
+- Avec `--creer-comptes`, le script **crée les comptes Metabase manquants** (nom et e-mail repris d'Odoo).
 - Chaque requête du dépôt (finance **et RH**) contient le repère `AND TRUE /* perimetre:… */`. Pour les RH, c'est l'unité de l'employé (`default_operating_unit_id`). Sur le tableau de bord modèle, il ne filtre rien. Dans chaque copie, le script le remplace par `… operating_unit_id IN (ses unités)`.
 - Avec `--droits`, le script crée le groupe « Périmètre – Nom », y ajoute l'utilisateur et lui donne la **lecture seule** sur **sa** collection.
 
@@ -15,7 +16,7 @@ Une DR est une unité comme les autres. Un utilisateur qui a l'unité « DR Cent
 
 1. Sur la VM Metabase : `cd ~/GestLab_dashboard && git pull`.
 2. Dans le tableau de bord modèle, **recollez chaque question** depuis le fichier du dépôt, pour que chacune contienne le repère `perimetre`.
-3. Invitez chaque utilisateur dans Metabase avec **son login Odoo comme e-mail** (Admin → Personnes → Inviter).
+3. Comptes Metabase : ajoutez `--creer-comptes` à la commande, et le script les crée. Vous pouvez aussi inviter chaque personne à la main (Admin → Personnes → Inviter) avec son login Odoo comme e-mail.
 4. Réglez une fois les droits de base, dans **Admin → Autorisations** :
    - **Collections** : groupe **Tous les utilisateurs** = **Pas d'accès** sur « Nos analyses » et sur le modèle ;
    - **Données → Odoo** : groupe **Tous les utilisateurs** : **Voir les données = Peut voir**, **Créer des requêtes = Non**. C'est indispensable : sinon un utilisateur pourrait écrire son propre SQL et tout voir.
@@ -28,10 +29,12 @@ Essai (ne modifie rien) :
 ```bash
 python3 outils/dupliquer_tableau.py --email hocineinfo@gmail.com --tableau 5 --droits --essai
 ```
-Lancement réel, pour tous les utilisateurs qui ont des unités :
+Lancement réel, pour tous les utilisateurs qui ont des unités, avec création des comptes :
 ```bash
-python3 outils/dupliquer_tableau.py --email hocineinfo@gmail.com --tableau 5 --droits
+python3 outils/dupliquer_tableau.py --email hocineinfo@gmail.com --tableau 5 --droits --creer-comptes
 ```
+
+**Mots de passe des comptes créés** : sans serveur e-mail, Metabase n'envoie rien. Pour chaque personne : **Admin → Personnes** → « … » à côté de son nom → **Réinitialiser le mot de passe** → copiez le lien affiché et envoyez-le-lui.
 Pour un ou quelques utilisateurs seulement :
 ```bash
 python3 outils/dupliquer_tableau.py --email hocineinfo@gmail.com --tableau 5 --droits --utilisateur ali@lnhc.dz

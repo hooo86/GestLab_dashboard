@@ -3,7 +3,8 @@
 
 Les unités de chaque utilisateur sont lues dans Odoo (onglet « Unités opérationnelles »
 de la fiche utilisateur, champ operating_unit_ids). L'utilisateur Metabase est
-retrouvé par son e-mail, qui doit être égal à son identifiant (login) Odoo.
+retrouvé par son e-mail : le login Odoo s'il s'agit d'une adresse e-mail, sinon
+l'e-mail de son contact Odoo. Avec --creer-comptes, les comptes manquants sont créés.
 
 Pour chaque utilisateur :
   1. crée (ou réutilise) la collection « <préfixe><nom> » ;
@@ -43,6 +44,7 @@ WHERE model = 'res.users' AND name = '{champ}' AND ttype = 'many2many'
 REQUETE_UNITES_ODOO = """
 SELECT lower(u.login)                       AS login,
        COALESCE(p.name, u.login)            AS nom,
+       lower(p.email)                       AS email_contact,
        string_agg(ou.id::text, ',' ORDER BY ou.id)     AS ids,
        string_agg(ou.name, ', ' ORDER BY ou.name)      AS unites
 FROM res_users u
@@ -50,7 +52,7 @@ JOIN res_partner p   ON p.id = u.partner_id
 JOIN "{table}" r     ON r."{col_user}" = u.id
 JOIN operating_unit ou ON ou.id = r."{col_unite}"
 WHERE u.active
-GROUP BY u.login, p.name
+GROUP BY u.login, p.name, p.email
 ORDER BY nom
 """
 
@@ -135,8 +137,14 @@ def lire_unites_odoo(mb, nom_base, champ):
             raise SystemExit(f"Nom de table ou de colonne inattendu : {nom!r}")
     print(f"Unités des utilisateurs lues dans {table} ({col_user} → {col_unite})")
     sql = REQUETE_UNITES_ODOO.format(table=table, col_user=col_user, col_unite=col_unite)
-    return [{"login": r[0], "nom": r[1], "ids": [int(x) for x in r[2].split(",")], "unites": r[3]}
-            for r in requete_odoo(mb, base["id"], sql)]
+    personnes = []
+    for r in requete_odoo(mb, base["id"], sql):
+        login, nom, email_contact, ids, unites = r
+        # E-mail du compte Metabase : le login Odoo s'il ressemble à une adresse, sinon l'e-mail du contact
+        email = login if "@" in (login or "") else (email_contact or "").strip()
+        personnes.append({"login": login, "email": email, "nom": nom,
+                          "ids": [int(x) for x in ids.split(",")], "unites": unites})
+    return personnes
 
 
 def trouver_ou_creer_collection(mb, nom, parent_id):
@@ -176,6 +184,15 @@ def donner_droits(mb, nom_groupe, user_id, collection_id):
 ALERTES = []
 
 
+def creer_compte(mb, personne):
+    morceaux = personne["nom"].split()
+    corps = {"first_name": morceaux[0] if morceaux else personne["email"],
+             "last_name": " ".join(morceaux[1:]) or "-",
+             "email": personne["email"]}
+    print(f"  Création du compte Metabase : {personne['email']}")
+    return mb.appel("POST", "/api/user", corps, ecriture=True)
+
+
 def copier_pour(mb, modele, personne, collection_id):
     nom = f"{modele['name']} – {personne['nom']}"
     print(f"  Copie du tableau de bord → « {nom} »")
@@ -208,6 +225,7 @@ def main():
     ap.add_argument("--prefixe", default="Tableaux – ", help="préfixe du nom des collections")
     ap.add_argument("--collection-parent", type=int, help="id de la collection où créer les collections")
     ap.add_argument("--droits", action="store_true", help="créer le groupe et donner la lecture sur la collection")
+    ap.add_argument("--creer-comptes", action="store_true", help="créer dans Metabase les comptes manquants")
     ap.add_argument("--essai", action="store_true", help="n'écrit rien, affiche ce qui serait fait")
     a = ap.parse_args()
 
@@ -222,19 +240,31 @@ def main():
     modele = mb.appel("GET", f"/api/dashboard/{a.tableau}")
     print(f"Modèle : « {modele['name']} » – {len(personnes)} utilisateur(s) Odoo avec des unités")
 
-    sans_compte = []
+    sans_compte, crees = [], []
     for p in personnes:
-        compte = comptes.get(p["login"])
-        print(f"\n=== {p['nom']} ({p['login']}) : {p['unites']} ===")
-        if not compte:
-            print("  ⚠ pas de compte Metabase avec cet e-mail : ignoré")
+        print(f"\n=== {p['nom']} ({p['email'] or p['login']}) : {p['unites']} ===")
+        if not p["email"]:
+            print("  ⚠ pas d'adresse e-mail (ni login, ni contact Odoo) : ignoré")
             sans_compte.append(p["login"])
+            continue
+        compte = comptes.get(p["email"])
+        if not compte and a.creer_comptes:
+            compte = creer_compte(mb, p) or {"id": None}
+            crees.append(p["email"])
+        if not compte:
+            print("  ⚠ pas de compte Metabase avec cet e-mail : ignoré (option --creer-comptes)")
+            sans_compte.append(p["email"])
             continue
         collection_id = trouver_ou_creer_collection(mb, f"{a.prefixe}{p['nom']}", a.collection_parent)
         copier_pour(mb, modele, p, collection_id)
-        if a.droits:
+        if a.droits and compte.get("id") is not None:
             donner_droits(mb, f"Périmètre – {p['nom']}", compte["id"], collection_id)
+        elif a.droits:
+            print("    [essai] droits donnés après création du compte")
 
+    if crees:
+        print("\nComptes créés (" + str(len(crees)) + ") : chaque personne doit choisir son mot de passe.")
+        print("  Admin → Personnes → « … » à côté du nom → Réinitialiser le mot de passe → copier le lien et le lui envoyer.")
     if sans_compte:
         print("\nSans compte Metabase (invitez-les avec cet e-mail puis relancez) :", ", ".join(sans_compte))
     if ALERTES:
