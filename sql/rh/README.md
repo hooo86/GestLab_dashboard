@@ -72,7 +72,7 @@ Toutes les requêtes suivent les mêmes règles :
 [ 60 Liste des départs (toute la largeur)                       ]
 ```
 
-Carte 60, variables : `annee` (Nombre), `date_debut` / `date_fin` (Date, période de départ), `motif` (Texte). Sans aucun filtre, c'est l'année en cours. Reliez le filtre **Année** du tableau de bord à `annee` sur les cartes 55, 56 et 60.
+Cartes 56 et 60, variables : `annee` (Nombre), `date_debut` / `date_fin` (Date, période de départ sur `departure_date`). Carte 60 seulement : `motif` (Texte). Sans aucun filtre, c'est l'année en cours. Reliez le filtre **Année** du tableau de bord à `annee` sur les cartes 55, 56 et 60, et les filtres **Départ du** / **Départ au** (Date unique) à `date_debut` / `date_fin` sur les cartes 56 et 60.
 
 ## Tableau de bord 3 — Ancienneté et retraites (filtres : Date d'arrêté, Âge de la retraite)
 
