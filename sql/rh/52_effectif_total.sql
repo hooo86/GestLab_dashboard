@@ -6,6 +6,7 @@
 -- Filtres Metabase (facultatifs) :
 --   {{date_arrete}}   Date
 --   {{departement}}   Filtre de champ → Hr Department → Name
+--   {{unite}}         Filtre de champ → Operating Unit → Name (unité de l'employé)
 WITH parametres AS (
   SELECT COALESCE([[{{date_arrete}}::date, ]] CURRENT_DATE) AS date_arrete
 ),
@@ -17,6 +18,7 @@ employes AS (
   FROM hr_employee
   CROSS JOIN parametres
   LEFT JOIN hr_department ON hr_department.id = hr_employee.department_id
+  LEFT JOIN operating_unit ON operating_unit.id = hr_employee.default_operating_unit_id
   WHERE hr_employee.employee_type = 'employee'        -- type « Employé » uniquement
     -- Recruté au plus tard à la date d'arrêté (date de recrutement inconnue : compté)
     AND (hr_employee.date_ru IS NULL OR hr_employee.date_ru <= parametres.date_arrete)
@@ -24,7 +26,9 @@ employes AS (
     --   parti après cette date (même archivé aujourd'hui), ou pas de date de départ et fiche active
     AND (hr_employee.departure_date > parametres.date_arrete
          OR (hr_employee.departure_date IS NULL AND hr_employee.active))
+    AND TRUE /* perimetre:hr_employee.default_operating_unit_id */  -- unités de l'utilisateur (remplacé par le script de copie)
     [[AND {{departement}}]]
+    [[AND {{unite}}]]
 )
 SELECT
   COUNT(*)                                   AS effectif_total,

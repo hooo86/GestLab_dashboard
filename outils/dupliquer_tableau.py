@@ -30,7 +30,8 @@ import sys
 import urllib.error
 import urllib.request
 
-REPERE = re.compile(r"AND TRUE /\* perimetre:(\w+) \*/")
+# AND TRUE /* perimetre:alias */  ou  /* perimetre:alias.colonne */ (colonne par défaut : operating_unit_id)
+REPERE = re.compile(r"AND TRUE /\* perimetre:(\w+)(?:\.(\w+))? \*/")
 
 REQUETE_UNITES_ODOO = """
 SELECT lower(u.login)                       AS login,
@@ -50,7 +51,7 @@ ORDER BY nom
 def fixer_perimetre_dans_sql(sql, ids):
     """Remplace chaque repère de périmètre par la liste des unités. Renvoie (sql, nb)."""
     liste = ", ".join(str(int(i)) for i in ids)
-    return REPERE.subn(lambda m: f"AND {m.group(1)}.operating_unit_id IN ({liste})", sql)
+    return REPERE.subn(lambda m: f"AND {m.group(1)}.{m.group(2) or 'operating_unit_id'} IN ({liste})", sql)
 
 
 def fixer_perimetre_dans_requete(objet, ids):

@@ -17,6 +17,9 @@
 **Variables Metabase (facultatives)**
 - `date_arrete` : **Date** (sans valeur : aujourd'hui)
 - `departement` : **Filtre de champ** → **Hr Department → Name** (choix multiple possible)
+- `unite` : **Filtre de champ** → **Operating Unit → Name** : unité de l'employé (`default_operating_unit_id`), choix multiple possible
+
+**Tableaux de bord par utilisateur** : les requêtes RH contiennent le repère de périmètre sur l'unité de l'employé (`default_operating_unit_id`). Le script `outils/dupliquer_tableau.py` les limite donc aux unités de chaque utilisateur, comme pour la finance. Un employé sans unité n'apparaît que sur le tableau de bord modèle.
 
 **Construire le graphique (question 50)**
 1. Visualisation → **Barres**.

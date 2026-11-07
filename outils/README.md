@@ -8,7 +8,7 @@ Une DR est une unité comme les autres. Un utilisateur qui a l'unité « DR Cent
 
 - Les unités de chaque utilisateur sont lues dans Odoo : fiche utilisateur → onglet **Unités opérationnelles**.
 - L'utilisateur Metabase est retrouvé par son **e-mail**, qui doit être égal à son **identifiant de connexion Odoo**.
-- Chaque requête du dépôt contient le repère `AND TRUE /* perimetre:… */`. Sur le tableau de bord modèle, il ne filtre rien. Dans chaque copie, le script le remplace par `… operating_unit_id IN (ses unités)`.
+- Chaque requête du dépôt (finance **et RH**) contient le repère `AND TRUE /* perimetre:… */`. Pour les RH, c'est l'unité de l'employé (`default_operating_unit_id`). Sur le tableau de bord modèle, il ne filtre rien. Dans chaque copie, le script le remplace par `… operating_unit_id IN (ses unités)`.
 - Avec `--droits`, le script crée le groupe « Périmètre – Nom », y ajoute l'utilisateur et lui donne la **lecture seule** sur **sa** collection.
 
 ## 1. Préparer (une fois)
